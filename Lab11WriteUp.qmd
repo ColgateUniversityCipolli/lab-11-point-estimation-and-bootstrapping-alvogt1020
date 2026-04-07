@@ -608,6 +608,112 @@ The graphs also illustrate the reduced variance/improved precision as $n$ increa
 ## Bootstrap
 Now, take *one* sample from each distribution. Instead of drawing a random sample at each iteration, sample *with replacement* from the one sample. Produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do we get roughly the same information as we do in the full simulation? Try this over several seeds -- what do you notice? Ensure to set your randomization seed.
 
+**NOTE:**   
+Turn off `#|echo=FALSE` to see my clunky code.
+
+```{r}
+#| echo=FALSE
+
+distr.bootstrap = function(n, var.true, distr.name, title.name){
+
+  var.n1 = NA
+  var.n = NA
+
+ x.orig = case_when(
+      distr.name == "poisson"  ~ rpois(n, 2),
+      distr.name == "binomial" ~ rbinom(n, 50, (5 - sqrt(21))/10),
+      distr.name == "normal"  ~ rnorm(n, 0, sqrt(2)),
+      distr.name == "exponential"   ~ rexp(n, 1/sqrt(2))
+    )
+
+  for(i in 1:1000){
+  
+  x = sample(x.orig, size = n, replace = TRUE)
+
+  mean.val = sum(x) / n
+  sqr.dev = (x-mean.val)^2
+  
+  var.n1[i] = sum(sqr.dev) / (n-1)
+  var.n[i] = sum(sqr.dev) / n
+}
+
+bias.n1 = mean(var.n1 - var.true)
+bias.n = mean(var.n - var.true)
+
+precision.n1 = 1/var(var.n1)
+precision.n = 1/var(var.n)
+
+mse.n1 = bias.n1^2 + var(var.n1)
+mse.n = bias.n^2 + var(var.n)
+  
+comparison = tibble(
+  Estimator = c("Variance (n-1)", "Variance (n)"),
+  Bias = c(bias.n1, bias.n),
+  Precision = c(precision.n1,precision.n),
+  MSE = c(mse.n1, mse.n)
+)
+
+
+ggdat = tibble(
+  value = c(var.n1, var.n),
+  estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
+)
+
+plot = ggdat |> ggplot() +
+  geom_density(aes(x=value, color=estimator))+
+  geom_vline(xintercept = var.true, col = "red") +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  labs(x = "Variance Estimate", 
+       y = "Density",
+       color = "Estimator") +
+  ggtitle(title.name)
+
+return(list(
+    table = comparison,
+    plot = plot
+  ))
+}
+```
+
+```{r}
+#| echo=FALSE
+
+set.seed(234567)
+
+pois.boot = distr.bootstrap(100, 2, "poisson", "Bootstrap: Poisson, n = 100")
+binom.boot = distr.bootstrap(100, 2, "binomial", "Bootstrap: Binomial, n = 100")
+norm.boot = distr.bootstrap(100, 2, "normal", "Bootstrap: Normal, n = 100")
+exp.boot = distr.bootstrap(100, 2, "exponential", "Bootstrap: Exponential, n = 100")
+
+boot.table = tibble(
+  Distribution = c("Poisson", "Binomial", "Normal","Exponential"),
+  `Bias (n-1)` = c(pois.boot$table$Bias[1], binom.boot$table$Bias[1], 
+                   norm.boot$table$Bias[1], exp.boot$table$Bias[1]),
+  `Bias (n)` = c(pois.boot$table$Bias[2], binom.boot$table$Bias[2], 
+                   norm.boot$table$Bias[2], exp.boot$table$Bias[2]),
+  `Precision (n-1)` = c(pois.boot$table$Precision[1], binom.boot$table$Precision[1],
+                        norm.boot$table$Precision[1], exp.boot$table$Precision[1]),
+  `Precision (n)` = c(pois.boot$table$Precision[2], binom.boot$table$Precision[2],
+                        norm.boot$table$Precision[2], exp.boot$table$Precision[2]),
+  `MSE (n-1)` = c(pois.boot$table$MSE[1], binom.boot$table$MSE[1],
+                        norm.boot$table$MSE[1], exp.boot$table$MSE[1]),
+  `MSE (n)` = c(pois.boot$table$MSE[2], binom.boot$table$MSE[2],
+                        norm.boot$table$MSE[2], exp.boot$table$MSE[2]),
+)
+
+boot.table |>
+  knitr::kable(digits = 4,
+               caption = "Bootstrap Variance Estimators Across Distributions")
+
+```
+
+```{r}
+pois.boot$plot
+binom.boot$plot
+norm.boot$plot
+exp.boot$plot
+```
 
 # Executive Summary
 Summarize the work you've done here to provide a brief (200-300 word) summary of the simulation and the results using your work in Lab 11. Your summary should be professional, clear, and all claims should be corroborated with statistical support.
