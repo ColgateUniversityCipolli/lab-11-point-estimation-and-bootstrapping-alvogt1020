@@ -164,7 +164,7 @@ ggdat |> ggplot() +
   labs(x = "Variance Estimate", 
        y = "Density",
        fill = "Estimator") +
-  ggtitle("Distribution of Variance Estimators (Poisson, Lambda=2)")
+  ggtitle("Distribution of Variance Estimators\n(Poisson, Lambda=2)")
 ```
 
 
@@ -225,7 +225,128 @@ ggdat |> ggplot() +
   labs(x = "Variance Estimate", 
        y = "Density",
        fill = "Estimator") +
-  ggtitle("Distribution of Variance Estimators (Binomial, n=50, p = 5-sqrt(21)/10)")
+  ggtitle("Distribution of Variance Estimators\n(Binomial, n=50, p=(5-sqrt(21))/10)")
+```
+
+*Normal:*
+```{r}
+set.seed(7272)
+
+var.n1 = NA #initialized vector for S_{n-1}^2
+var.n = NA #initialized vector for S_{n}^2
+n = 20
+var.true = 2
+
+for(i in 1:1000){
+  x = rnorm(n,0,sqrt(2))
+  mean.val = sum(x) / n
+  sqr.dev = (x-mean.val)^2
+  
+  var.n1[i] = sum(sqr.dev) / (n-1)
+  var.n[i] = sum(sqr.dev) / n
+}
+
+# Compare estimators
+bias.n1 = mean(var.n1 - var.true)
+bias.n = mean(var.n - var.true)
+
+precision.n1 = 1/var(var.n1)
+precision.n = 1/var(var.n)
+
+mse.n1 = bias.n1^2 + var(var.n1)
+mse.n = bias.n^2 + var(var.n)
+
+# Create numerical table
+norm.comparison = tibble(
+  Estimator = c("Variance (n-1)", "Variance (n)"),
+  Bias = c(bias.n1, bias.n),
+  Precision = c(precision.n1,precision.n),
+  MSE = c(mse.n1, mse.n)
+)
+
+norm.comparison |>
+  knitr::kable(digits = 2)
+
+# Create Plots
+ggdat = tibble(
+  value = c(var.n1, var.n),
+  estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
+)
+
+ggdat |> ggplot() +
+  geom_histogram(aes(x = value,
+                     y = after_stat(density), 
+                     fill = estimator), 
+                     bins = 50, 
+                     color = "gray") +
+  geom_vline(xintercept = var.true, col = "red") +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  labs(x = "Variance Estimate", 
+       y = "Density",
+       fill = "Estimator") +
+  ggtitle("Distribution of Variance Estimators\n(Normal, mu=0, p=sqrt(2)")
+```
+
+
+*Exponential:*
+```{r}
+set.seed(7272)
+
+var.n1 = NA #initialized vector for S_{n-1}^2
+var.n = NA #initialized vector for S_{n}^2
+n = 20
+var.true = 2
+
+for(i in 1:1000){
+  x = rexp(n,rate=1/sqrt(2))
+  mean.val = sum(x) / n
+  sqr.dev = (x-mean.val)^2
+  
+  var.n1[i] = sum(sqr.dev) / (n-1)
+  var.n[i] = sum(sqr.dev) / n
+}
+
+# Compare estimators
+bias.n1 = mean(var.n1 - var.true)
+bias.n = mean(var.n - var.true)
+
+precision.n1 = 1/var(var.n1)
+precision.n = 1/var(var.n)
+
+mse.n1 = bias.n1^2 + var(var.n1)
+mse.n = bias.n^2 + var(var.n)
+
+# Create numerical table
+exp.comparison = tibble(
+  Estimator = c("Variance (n-1)", "Variance (n)"),
+  Bias = c(bias.n1, bias.n),
+  Precision = c(precision.n1,precision.n),
+  MSE = c(mse.n1, mse.n)
+)
+
+exp.comparison |>
+  knitr::kable(digits = 2)
+
+# Create Plots
+ggdat = tibble(
+  value = c(var.n1, var.n),
+  estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
+)
+
+ggdat |> ggplot() +
+  geom_histogram(aes(x = value,
+                     y = after_stat(density), 
+                     fill = estimator), 
+                     bins = 50, 
+                     color = "gray") +
+  geom_vline(xintercept = var.true, col = "red") +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  labs(x = "Variance Estimate", 
+       y = "Density",
+       fill = "Estimator") +
+  ggtitle("Distribution of Variance Estimators\n(Exponential, lambda = 1/sqrt(2)")
 ```
 
 
