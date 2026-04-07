@@ -585,10 +585,25 @@ exp500$plot
 
 
 **Commentary:**   
-Across all four of the distributions, we find that the results change with sample size. Specifically, as $n$ grows,the two density plots for each distribution (one for each variance measure) converge, and it becomes harder to differentiate between the density plot for $S^2_{n-1}$ and the density plot for $S^2_{n}$. This phenomenon is further supported by the numerical summary tables. As n increases, we notice that bias and MSE for both $S^2_{n-1}$ and $S^2_{n}$ approach 0, while precision increases for both.
+Across all four of the distributions, we find that the results change with sample size. Specifically, as $n$ grows,the two density plots for each distribution (one for each variance measure) converge, and it becomes harder to differentiate between the density plot for $s^2_{n-1}$ and the density plot for $s^2_{n}$. This phenomenon is further supported by the numerical summary tables. As n increases, we notice that bias and MSE for both $s^2_{n-1}$ and $s^2_{n}$ approach 0, while precision increases for both.
 
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
+
+**NOTE:**
+Plots are already generated above.
+
+**Commentary**
+Density plots for the four distributions with $n=100$, we can obtain a good estimate about the distributions for $s_{n-1}^2$ and $s_{n}^2$. The first thing the density plots demonstrate is that $s_{n-1}^2$ and $s_{n}^2$ have very similar distributions (despite $s_{n}^2$ being slightly biased toward the left), though what distribution this is depends on the distribution of the model, and the sample size, $n$.   
+
+*Small n:*
+For small n, the distributions for $s_{n-1}^2$ and $s_{n}^2$ in all distributions are right-skewed.
+
+*Large n:*
+With large enough $n(=500)$, $s_{n-1}^2$ and $s_{n}^2$ for the Poisson, Binomial, Normal, and Exponential distributions, all appear to approach a symmetric distribution. However, for the Exponential distribution, $s_{n-1}^2$ and $s_{n}^2$ still appears to follow a noticeably right-skewed distribution even at $n=100$, taking a bit longer than the others to approach this symmetric shape. 
+
+The graphs also illustrate the reduced variance/improved precision as $n$ increases, with observations further from the mean becoming less likely as $n$ increases.
+
 
 ## Bootstrap
 Now, take *one* sample from each distribution. Instead of drawing a random sample at each iteration, sample *with replacement* from the one sample. Produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do we get roughly the same information as we do in the full simulation? Try this over several seeds -- what do you notice? Ensure to set your randomization seed.
