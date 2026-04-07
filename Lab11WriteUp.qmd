@@ -144,7 +144,7 @@ poisson.comparison = tibble(
 )
 
 poisson.comparison |>
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, caption = "Poisson Variance Estimator Comparison")
 
 # Create Plots
 ggdat = tibble(
@@ -205,7 +205,7 @@ binom.comparison = tibble(
 )
 
 binom.comparison |>
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, caption = "Binomial Variance Estimator Comparison")
 
 # Create Plots
 ggdat = tibble(
@@ -265,7 +265,7 @@ norm.comparison = tibble(
 )
 
 norm.comparison |>
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, caption = "Normal Dist. Variance Estimator Comparison")
 
 # Create Plots
 ggdat = tibble(
@@ -326,7 +326,7 @@ exp.comparison = tibble(
 )
 
 exp.comparison |>
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, caption = "Exp. Distr. Variance Estimator Comparison")
 
 # Create Plots
 ggdat = tibble(
