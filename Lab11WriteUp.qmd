@@ -540,49 +540,52 @@ norm500$plot
 ```
 
 
-**Exponential** (NEED TO CHANGE BELOW)
+**Exponential**
 ```{r}
 #| echo=FALSE
-norm20 = distr.simulator(20, 2, "normal", "Normal, n = 20")
-norm50 = distr.simulator(50, 2, "normal", "Normal, n = 50")
-norm100 = distr.simulator(100, 2, "normal", "Normal, n = 100")
-norm500 = distr.simulator(500, 2, "normal", "Normal, n = 500")
+exp20 = distr.simulator(20, 2, "exponential", "Exponential, n = 20")
+exp50 = distr.simulator(50, 2, "exponential", "Exponential, n = 50")
+exp100 = distr.simulator(100, 2, "exponential", "Exponential, n = 100")
+exp500 = distr.simulator(500, 2, "exponential", "Exponential, n = 500")
 
 norm.table = tibble(
   n = c(20, 50, 100, 500),
-  `Bias (n-1)` = c(norm20$table$Bias[1], norm50$table$Bias[1], 
-                   norm100$table$Bias[1], norm500$table$Bias[1]
+  `Bias (n-1)` = c(exp20$table$Bias[1], exp50$table$Bias[1], 
+                   exp100$table$Bias[1], exp500$table$Bias[1]
   ),
-  `Bias (n)` = c(norm20$table$Bias[2], norm50$table$Bias[2], 
-                 norm100$table$Bias[2], norm500$table$Bias[2]
+  `Bias (n)` = c(exp20$table$Bias[2], exp50$table$Bias[2], 
+                 exp100$table$Bias[2], exp500$table$Bias[2]
   ),               
-  `Precision (n-1)` = c(norm20$table$Precision[1], norm50$table$Precision[1], 
-                        norm100$table$Precision[1], norm500$table$Precision[1]
+  `Precision (n-1)` = c(exp20$table$Precision[1], exp50$table$Precision[1], 
+                        exp100$table$Precision[1], exp500$table$Precision[1]
   ),                      
-  `Precision (n)` = c(norm20$table$Precision[2],      
-                      norm50$table$Precision[2], 
-                      norm100$table$Precision[2], norm500$table$Precision[2]
+  `Precision (n)` = c(exp20$table$Precision[2],      
+                      exp50$table$Precision[2], 
+                      exp100$table$Precision[2], exp500$table$Precision[2]
   ),
-  `MSE (n-1)` = c(norm20$table$MSE[1], norm50$table$MSE[1], 
-                  norm100$table$MSE[1], norm500$table$MSE[1]
+  `MSE (n-1)` = c(exp20$table$MSE[1], exp50$table$MSE[1], 
+                  exp100$table$MSE[1], exp500$table$MSE[1]
   ),                
-  `MSE (n)` = c(norm20$table$MSE[2], norm50$table$MSE[2], 
-                norm100$table$MSE[2], norm500$table$MSE[2]
+  `MSE (n)` = c(exp20$table$MSE[2], exp50$table$MSE[2], 
+                exp100$table$MSE[2], exp500$table$MSE[2]
   )
 )
 
 
 norm.table |>
   knitr::kable(digits = 4,
-               caption = "Normal Distribution Variance Estimators Across Sample Sizes")
+               caption = "Exponential Distribution Variance Estimators Across Sample Sizes")
 
 # Plots (didn't use patchwork because they were too small)
-norm20$plot
-norm50$plot
-norm100$plot
-norm500$plot
+exp20$plot
+exp50$plot
+exp100$plot
+exp500$plot
 ```
 
+
+**Commentary:**   
+Across all four of the distributions, we find that the results change with sample size. Specifically, as $n$ grows,the two density plots for each distribution (one for each variance measure) converge, and it becomes harder to differentiate between the density plot for $S^2_{n-1}$ and the density plot for $S^2_{n}$. This phenomenon is further supported by the numerical summary tables. As n increases, we notice that bias and MSE for both $S^2_{n-1}$ and $S^2_{n}$ approach 0, while precision increases for both.
 
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
