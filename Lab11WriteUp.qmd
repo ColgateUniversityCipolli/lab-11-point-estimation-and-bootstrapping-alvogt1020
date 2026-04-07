@@ -338,8 +338,12 @@ ggdat |> ggplot() +
 Consider the effect of the sample size have on these results. Provide a graphical and numerical summary of what happens as $n$ increases -- say $n=20$, $n=50$, $n=100$, and $n=500$. Does the result in your initial simulation hold across samples? Or, do things change as the sample size changes? Ensure to set your randomization seed.
 
 **Solution:**  
-*Generalizing the previous work into a function:* 
+Note: I used `echo=FALSE` to make my PDF easier to look at whilst working on it (I took a "brute force" approach to this section). Apologies if this is an issue.
+
+*Generalizing the previous work into a function (code hidden):* 
 ```{r}
+#| echo=FALSE
+
 distr.simulator = function(n, var.true, distr.name, title.name){
   set.seed(7272)
 
@@ -402,8 +406,53 @@ return(list(
 }
 ```
 
-*Running the Simulations:*
- 
+*Running the Simulations (code hidden):*
+Apologies for the looooong brute force coding below. This was just the most intuitive way for me to generate everything!
+```{r}
+#| echo=FALSE
+
+#Poisson 
+pois20 = distr.simulator(20, 2, "poisson", "Poisson, n = 20")
+pois50 = distr.simulator(50, 2, "poisson", "Poisson, n = 50")
+pois100 = distr.simulator(100, 2, "poisson", "Poisson, n = 100")
+pois500 = distr.simulator(500, 2, "poisson", "Poisson, n = 500")
+
+poisson.table = tibble(
+  n = c(20, 50, 100, 500),
+  `Bias (n-1)` = c(pois20$table$Bias[1], pois50$table$Bias[1], 
+                   pois100$table$Bias[1], pois500$table$Bias[1]
+  ),
+  `Bias (n)` = c(pois20$table$Bias[2], pois50$table$Bias[2], 
+                 pois100$table$Bias[2], pois500$table$Bias[2]
+  ),               
+  `Precision (n-1)` = c(pois20$table$Precision[1], pois50$table$Precision[1], 
+                        pois100$table$Precision[1], pois500$table$Precision[1]
+  ),                      
+  `Precision (n)` = c(pois20$table$Precision[2],      
+                      pois50$table$Precision[2], 
+                      pois100$table$Precision[2], pois500$table$Precision[2]
+  ),
+  `MSE (n-1)` = c(pois20$table$MSE[1], pois50$table$MSE[1], 
+                  pois100$table$MSE[1], pois500$table$MSE[1]
+  ),                
+  `MSE (n)` = c(pois20$table$MSE[2], pois50$table$MSE[2], 
+                pois100$table$MSE[2], pois500$table$MSE[2]
+  )
+)
+
+
+poisson.table |>
+  knitr::kable(digits = 4,
+               caption = "Poisson Variance Estimators Across Sample Sizes")
+
+# Plots (didn't use patchwork because they were too small)
+pois20$plot
+pois50$plot
+pois100$plot
+pois500$plot
+```
+
+
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
 
