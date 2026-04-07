@@ -159,7 +159,7 @@ ggdat |> ggplot() +
   theme_bw() +
   labs(x = "Variance Estimate", 
        y = "Density",
-       fill = "Estimator") +
+       color = "Estimator") +
   ggtitle("Distribution of Variance Estimators\n(Poisson, Lambda=2)")
 ```
 
@@ -216,7 +216,7 @@ ggdat |> ggplot() +
   theme_bw() +
   labs(x = "Variance Estimate", 
        y = "Density",
-       fill = "Estimator") +
+       color = "Estimator") +
   ggtitle("Distribution of Variance Estimators\n(Binomial, n=50, p=(5-sqrt(21))/10)")
 ```
 
@@ -272,7 +272,7 @@ ggdat |> ggplot() +
   theme_bw() +
   labs(x = "Variance Estimate", 
        y = "Density",
-       fill = "Estimator") +
+       color = "Estimator") +
   ggtitle("Distribution of Variance Estimators\n(Normal, mu=0, p=sqrt(2)")
 ```
 
@@ -329,7 +329,7 @@ ggdat |> ggplot() +
   theme_bw() +
   labs(x = "Variance Estimate", 
        y = "Density",
-       fill = "Estimator") +
+       color = "Estimator") +
   ggtitle("Distribution of Variance Estimators\n(Exponential, lambda = 1/sqrt(2)")
 ```
 
@@ -337,7 +337,72 @@ ggdat |> ggplot() +
 ## Simulation over various sample sizes
 Consider the effect of the sample size have on these results. Provide a graphical and numerical summary of what happens as $n$ increases -- say $n=20$, $n=50$, $n=100$, and $n=500$. Does the result in your initial simulation hold across samples? Or, do things change as the sample size changes? Ensure to set your randomization seed.
 
+**Solution:**  
+*Generalizing the previous work into a function:* 
+```{r}
+distr.simulator = function(n, var.true, distr.name, title.name){
+  set.seed(7272)
 
+  var.n1 = NA
+  var.n = NA
+
+  for(i in 1:1000){
+  
+  x = case_when(
+      distr.name == "poisson"  ~ rpois(n, 2),
+      distr.name == "binomial" ~ rbinom(n, 50, (5 - sqrt(21))/10),
+      distr.name == "normal"  ~ rnorm(n, 0, sqrt(2)),
+      distr.name == "exponential"   ~ rexp(n, 1/sqrt(2))
+    )
+
+  mean.val = sum(x) / n
+  sqr.dev = (x-mean.val)^2
+  
+  var.n1[i] = sum(sqr.dev) / (n-1)
+  var.n[i] = sum(sqr.dev) / n
+}
+
+bias.n1 = mean(var.n1 - var.true)
+bias.n = mean(var.n - var.true)
+
+precision.n1 = 1/var(var.n1)
+precision.n = 1/var(var.n)
+
+mse.n1 = bias.n1^2 + var(var.n1)
+mse.n = bias.n^2 + var(var.n)
+  
+comparison = tibble(
+  Estimator = c("Variance (n-1)", "Variance (n)"),
+  Bias = c(bias.n1, bias.n),
+  Precision = c(precision.n1,precision.n),
+  MSE = c(mse.n1, mse.n)
+)
+
+
+ggdat = tibble(
+  value = c(var.n1, var.n),
+  estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
+)
+
+plot = ggdat |> ggplot() +
+  geom_density(aes(x=value, color=estimator))+
+  geom_vline(xintercept = var.true, col = "red") +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  labs(x = "Variance Estimate", 
+       y = "Density",
+       color = "Estimator") +
+  ggtitle(title.name)
+
+return(list(
+    table = comparison,
+    plot = plot
+  ))
+
+}
+```
+
+*Running the Simulations:*
  
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
