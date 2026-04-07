@@ -125,7 +125,7 @@ for(i in 1:1000){
   var.n[i] = sum(sqr.dev) / n
 }
 
-# Compare estimators:
+# Compare estimators
 bias.n1 = mean(var.n1 - var.true)
 bias.n = mean(var.n - var.true)
 
@@ -135,6 +135,7 @@ precision.n = 1/var(var.n)
 mse.n1 = bias.n1^2 + var(var.n1)
 mse.n = bias.n^2 + var(var.n)
 
+# Create numerical table
 poisson.comparison = tibble(
   Estimator = c("Variance (n-1)", "Variance (n)"),
   Bias = c(bias.n1, bias.n),
@@ -144,6 +145,26 @@ poisson.comparison = tibble(
 
 poisson.comparison |>
   knitr::kable(digits = 2)
+
+# Create Plots
+ggdat = tibble(
+  value = c(var.n1, var.n),
+  estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
+)
+
+ggdat |> ggplot() +
+  geom_histogram(aes(x = value,
+                     y = after_stat(density), 
+                     fill = estimator), 
+                     bins = 50, 
+                     color = "gray") +
+  geom_vline(xintercept = var.true, col = "red") +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  labs(x = "Variance Estimate", 
+       y = "Density",
+       fill = "Estimator") +
+  ggtitle("Distribution of Variance Estimators (Poisson, Lambda=2)")
 ```
 
 ## Simulation over various sample sizes
