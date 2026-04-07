@@ -679,7 +679,7 @@ return(list(
 ```{r}
 #| echo=FALSE
 
-set.seed(234567)
+set.seed(2567)
 
 pois.boot = distr.bootstrap(100, 2, "poisson", "Bootstrap: Poisson, n = 100")
 binom.boot = distr.bootstrap(100, 2, "binomial", "Bootstrap: Binomial, n = 100")
@@ -699,7 +699,7 @@ boot.table = tibble(
   `MSE (n-1)` = c(pois.boot$table$MSE[1], binom.boot$table$MSE[1],
                         norm.boot$table$MSE[1], exp.boot$table$MSE[1]),
   `MSE (n)` = c(pois.boot$table$MSE[2], binom.boot$table$MSE[2],
-                        norm.boot$table$MSE[2], exp.boot$table$MSE[2]),
+                        norm.boot$table$MSE[2], exp.boot$table$MSE[2])
 )
 
 boot.table |>
@@ -715,5 +715,20 @@ norm.boot$plot
 exp.boot$plot
 ```
 
+**Commentary:**
+With a moderate sample size of $n=100$, we notice that with bootstrap sampling, the distributions for our estimators exhibit more variance and are less predictable. This is especially noticeable when changing seeds. For example, for one seed (234567), we notice the estimators for the Poisson distribution are significantally more biased than the others, whereas the Exponential distribution exhibits this behavior when the seed is (2567). This demonstrates how bootstrapping is highly dependent on the particular random sample (which is what the seed establishes). Despite the increased variance and bias, the distributions still are "somewhat" close to the true value of 2 (though that description is somewhat liberal).
+
 # Executive Summary
 Summarize the work you've done here to provide a brief (200-300 word) summary of the simulation and the results using your work in Lab 11. Your summary should be professional, clear, and all claims should be corroborated with statistical support.
+
+
+**Response:**
+In the above lab, we compare two variance point estimators, $S^2_{n-1}$ and $S^2_{n}$ to identify why using the $n-1$ version is standard practice. We compare the two point estimators through three primary measures (listed in order of priority): (1) Bias, (2) Precision, and (3) Mean Squared Error (MSE). That is to say, we first would like to compare each estimator's bias: if both are unbiased, we compare the precision, if both are biased, we compare the MSE.  
+
+To obtain these values, we simulated 1,000 samples for four distributions: Poisson, Binomial, Normal, and Exponential. Each of these distributions is parameterized such that the true variance is 2, allowing for clear and consistent analysis. For each distribution, we also compared numerical and graphical summaries for multiple n values (10, 50, 100, 500).
+
+The primary findings from this approach is that, regardless of distribution, $S^2_{n}$ is consistently biased downward and $S^2_{n-1}$ is consistently unbiased. This difference is more pronounced for small $n$: as $n$ increases for each of these distributions, the biases of the two estimators converge toward 0. Note that because only $S^2_{n-1}$ is unbiased, we do not need to analyze MSE. Furthermore, precision increases for both estimators with $n$, and the distributions for both estimators improve from right-skewed for small $n$ to symmetric/approximately normal for large $n$.  
+
+After obtaining our primary results, we study if outcomes change under a bootstrapping procedure, and if so, how. The predominant result from this analysis was that bootstrap sampling produces significantly more variable estimator distributions that change wildly with the sampling seed. The bootstrap results still loosely depicted the behavior we exhibited before, but with less reliability.
+
+Overall, this exercise confirms the advantage of using $S^2_{n-1}$ over $S^2_{n}$, particularly when obtaining large samples is not feasible.
