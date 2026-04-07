@@ -153,11 +153,7 @@ ggdat = tibble(
 )
 
 ggdat |> ggplot() +
-  geom_histogram(aes(x = value,
-                     y = after_stat(density), 
-                     fill = estimator), 
-                     bins = 50, 
-                     color = "gray") +
+  geom_density(aes(x=value, color=estimator))+
   geom_vline(xintercept = var.true, col = "red") +
   geom_hline(yintercept = 0) +
   theme_bw() +
@@ -214,11 +210,7 @@ ggdat = tibble(
 )
 
 ggdat |> ggplot() +
-  geom_histogram(aes(x = value,
-                     y = after_stat(density), 
-                     fill = estimator), 
-                     bins = 50, 
-                     color = "gray") +
+  geom_density(aes(x=value, color=estimator))+
   geom_vline(xintercept = var.true, col = "red") +
   geom_hline(yintercept = 0) +
   theme_bw() +
@@ -274,11 +266,7 @@ ggdat = tibble(
 )
 
 ggdat |> ggplot() +
-  geom_histogram(aes(x = value,
-                     y = after_stat(density), 
-                     fill = estimator), 
-                     bins = 50, 
-                     color = "gray") +
+  geom_density(aes(x=value, color=estimator))+
   geom_vline(xintercept = var.true, col = "red") +
   geom_hline(yintercept = 0) +
   theme_bw() +
@@ -335,11 +323,7 @@ ggdat = tibble(
 )
 
 ggdat |> ggplot() +
-  geom_histogram(aes(x = value,
-                     y = after_stat(density), 
-                     fill = estimator), 
-                     bins = 50, 
-                     color = "gray") +
+  geom_density(aes(x=value, color=estimator))+
   geom_vline(xintercept = var.true, col = "red") +
   geom_hline(yintercept = 0) +
   theme_bw() +
@@ -352,6 +336,8 @@ ggdat |> ggplot() +
 
 ## Simulation over various sample sizes
 Consider the effect of the sample size have on these results. Provide a graphical and numerical summary of what happens as $n$ increases -- say $n=20$, $n=50$, $n=100$, and $n=500$. Does the result in your initial simulation hold across samples? Or, do things change as the sample size changes? Ensure to set your randomization seed.
+
+
  
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
