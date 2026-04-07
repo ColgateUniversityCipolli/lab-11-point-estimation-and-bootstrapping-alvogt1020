@@ -59,6 +59,7 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 #| include: false
 library(tidyverse)
 library(patchwork)
+library(knitr)
 ```
 
 **Tips**
@@ -110,8 +111,8 @@ Create a plot or combination of plots (using patchwork) to show the results acro
 ```{r}
 set.seed(7272)
 
-s2.n1 = NA #initialized vector for S_{n-1}^2
-s2.n = NA #initialized vector for S_{n}^2
+var.n1 = NA #initialized vector for S_{n-1}^2
+var.n = NA #initialized vector for S_{n}^2
 n = 20
 var.true = 2
 
@@ -120,16 +121,29 @@ for(i in 1:1000){
   mean.val = sum(x) / n
   sqr.dev = (x-mean.val)^2
   
-  s2.n1[i] = sum(sqr.dev) / (n-1)
-  s2.n[i] = sum(sqr.dev) / n
+  var.n1[i] = sum(sqr.dev) / (n-1)
+  var.n[i] = sum(sqr.dev) / n
 }
 
 # Compare estimators:
-(bias.n1 = mean(s2.n1 - var.true))
-(bias.n = mean(s2.n - var.true))
+bias.n1 = mean(var.n1 - var.true)
+bias.n = mean(var.n - var.true)
 
-(mse.n1 = mean((s2.n1 - var.true)^2))
-(mse.n = mean((s2.n - var.true)^2))
+precision.n1 = 1/var(var.n1)
+precision.n = 1/var(var.n)
+
+mse.n1 = bias.n1^2 + var(var.n1)
+mse.n = bias.n^2 + var(var.n)
+
+poisson.comparison = tibble(
+  Estimator = c("Variance (n-1)", "Variance (n)"),
+  Bias = c(bias.n1, bias.n),
+  Precision = c(precision.n1,precision.n),
+  MSE = c(mse.n1, mse.n)
+)
+
+poisson.comparison |>
+  knitr::kable(digits = 2)
 ```
 
 ## Simulation over various sample sizes
