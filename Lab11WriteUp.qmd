@@ -105,6 +105,33 @@ Create a plot or combination of plots (using patchwork) to show the results acro
 \textrm{Mean Square Error} &= \textrm{Bias}^2 + \textrm{Variance of Estimates}.
 \end{align*}
 
+**Solution:**  
+*Poisson:*
+```{r}
+set.seed(7272)
+
+s2.n1 = NA #initialized vector for S_{n-1}^2
+s2.n = NA #initialized vector for S_{n}^2
+n = 20
+var.true = 2
+
+for(i in 1:1000){
+  x = rpois(n = n, lambda = 2)
+  mean.val = sum(x) / n
+  sqr.dev = (x-mean.val)^2
+  
+  s2.n1[i] = sum(sqr.dev) / (n-1)
+  s2.n[i] = sum(sqr.dev) / n
+}
+
+# Compare estimators:
+(bias.n1 = mean(s2.n1 - var.true))
+(bias.n = mean(s2.n - var.true))
+
+(mse.n1 = mean((s2.n1 - var.true)^2))
+(mse.n = mean((s2.n - var.true)^2))
+```
+
 ## Simulation over various sample sizes
 Consider the effect of the sample size have on these results. Provide a graphical and numerical summary of what happens as $n$ increases -- say $n=20$, $n=50$, $n=100$, and $n=500$. Does the result in your initial simulation hold across samples? Or, do things change as the sample size changes? Ensure to set your randomization seed.
  
