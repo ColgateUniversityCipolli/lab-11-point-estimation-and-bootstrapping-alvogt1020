@@ -388,8 +388,18 @@ ggdat = tibble(
   estimator = rep(c("Variance (n-1)", "Variance (n)"), each = 1000)
 )
 
-plot = ggdat |> ggplot() +
-  geom_density(aes(x=value, color=estimator))+
+box.plot = ggdat |> ggplot(aes(x = estimator, 
+                               y = value, 
+                               fill = estimator)) +
+  geom_boxplot(alpha=0.7) +
+  geom_hline(yintercept = var.true, col = "green") +
+  theme_bw() +
+  labs(x = "Estimator",
+       y = "Variance Estimate",
+       fill = "Estimator")
+
+density.plot = ggdat |> ggplot(aes(x=value, color=estimator)) +
+  geom_density()+
   geom_vline(xintercept = var.true, col = "red") +
   geom_hline(yintercept = 0) +
   theme_bw() +
@@ -400,7 +410,8 @@ plot = ggdat |> ggplot() +
 
 return(list(
     table = comparison,
-    plot = plot
+    box.plot = box.plot,
+    density.plot = density.plot
   ))
 
 }
@@ -447,10 +458,10 @@ poisson.table |>
                caption = "Poisson Variance Estimators Across Sample Sizes")
 
 # Plots (didn't use patchwork because they were too small)
-pois20$plot
-pois50$plot
-pois100$plot
-pois500$plot
+pois20$box.plot
+pois50$box.plot
+pois100$box.plot
+pois500$box.plot
 ```
 
 **Binomial**
@@ -490,11 +501,12 @@ binom.table |>
                caption = "Binomial Variance Estimators Across Sample Sizes")
 
 # Plots (didn't use patchwork because they were too small)
-binom20$plot
-binom50$plot
-binom100$plot
-binom500$plot
+binom20$box.plot
+binom50$box.plot
+binom100$box.plot
+binom500$box.plot
 ```
+
 
 **Normal**
 ```{r}
@@ -533,10 +545,10 @@ norm.table |>
                caption = "Normal Distribution Variance Estimators Across Sample Sizes")
 
 # Plots (didn't use patchwork because they were too small)
-norm20$plot
-norm50$plot
-norm100$plot
-norm500$plot
+norm20$box.plot
+norm50$box.plot
+norm100$box.plot
+norm500$box.plot
 ```
 
 
@@ -548,7 +560,7 @@ exp50 = distr.simulator(50, 2, "exponential", "Exponential, n = 50")
 exp100 = distr.simulator(100, 2, "exponential", "Exponential, n = 100")
 exp500 = distr.simulator(500, 2, "exponential", "Exponential, n = 500")
 
-norm.table = tibble(
+exp.table = tibble(
   n = c(20, 50, 100, 500),
   `Bias (n-1)` = c(exp20$table$Bias[1], exp50$table$Bias[1], 
                    exp100$table$Bias[1], exp500$table$Bias[1]
@@ -572,16 +584,17 @@ norm.table = tibble(
 )
 
 
-norm.table |>
+exp.table |>
   knitr::kable(digits = 4,
                caption = "Exponential Distribution Variance Estimators Across Sample Sizes")
 
 # Plots (didn't use patchwork because they were too small)
-exp20$plot
-exp50$plot
-exp100$plot
-exp500$plot
+exp20$box.plot
+exp50$box.plot
+exp100$box.plot
+exp500$box.plot
 ```
+
 
 
 **Commentary:**   
@@ -590,8 +603,28 @@ Across all four of the distributions, we find that the results change with sampl
 ## Simulation
 You have written code to draw a random sample of various sizes from each distribution, and to calculate and store the calculated estimates. Rework your code to produce a density plot of the $s_{n-1}^2$ and $s_{n}^2$. Do you have a guess about their distribution? Ensure to set your randomization seed. 
 
-**NOTE:**
-Plots are already generated above.
+```{r}
+pois20$density.plot
+pois50$density.plot
+pois100$density.plot
+pois500$density.plot
+
+binom20$density.plot
+binom50$density.plot
+binom100$density.plot
+binom500$density.plot
+
+norm20$density.plot
+norm50$density.plot
+norm100$density.plot
+norm500$density.plot
+
+
+exp20$density.plot
+exp50$density.plot
+exp100$density.plot
+exp500$density.plot
+```
 
 **Commentary**
 Density plots for the four distributions with $n=100$, we can obtain a good estimate about the distributions for $s_{n-1}^2$ and $s_{n}^2$. The first thing the density plots demonstrate is that $s_{n-1}^2$ and $s_{n}^2$ have very similar distributions (despite $s_{n}^2$ being slightly biased toward the left), though what distribution this is depends on the distribution of the model, and the sample size, $n$.   
@@ -725,7 +758,7 @@ Summarize the work you've done here to provide a brief (200-300 word) summary of
 **Response:**
 In the above lab, we compare two variance point estimators, $S^2_{n-1}$ and $S^2_{n}$ to identify why using the $n-1$ version is standard practice. We compare the two point estimators through three primary measures (listed in order of priority): (1) Bias, (2) Precision, and (3) Mean Squared Error (MSE). That is to say, we first would like to compare each estimator's bias: if both are unbiased, we compare the precision, if both are biased, we compare the MSE.  
 
-To obtain these values, we simulated 1,000 samples for four distributions: Poisson, Binomial, Normal, and Exponential. Each of these distributions is parameterized such that the true variance is 2, allowing for clear and consistent analysis. For each distribution, we also compared numerical and graphical summaries for multiple n values (10, 50, 100, 500).
+To obtain these values, we simulated 1,000 samples for four distributions: Poisson, Binomial, Normal, and Exponential. Each of these distributions is parameterized such that the true variance is 2, allowing for clear and consistent analysis. For each distribution, we also compared numerical and graphical summaries for multiple n values (20, 50, 100, 500).
 
 The primary findings from this approach is that, regardless of distribution, $S^2_{n}$ is consistently biased downward and $S^2_{n-1}$ is consistently unbiased. This difference is more pronounced for small $n$: as $n$ increases for each of these distributions, the biases of the two estimators converge toward 0. Note that because only $S^2_{n-1}$ is unbiased, we do not need to analyze MSE. Furthermore, precision increases for both estimators with $n$, and the distributions for both estimators improve from right-skewed for small $n$ to symmetric/approximately normal for large $n$.  
 
